@@ -18,7 +18,7 @@ typedef struct s_paquet_sent {
   // id of the redlight / sensor
   unsigned int  id;
   entity      entity;
-} paquet_send;
+} paquet_sent;
 
 typedef struct s_paquet_received {
   state         state;
