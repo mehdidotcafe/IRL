@@ -1,0 +1,32 @@
+{
+  "streets": [{
+      "id": 1,
+      "dir": 1,
+      "startX": 0,
+      "startY": 0,
+      "endX": 18,
+      "endY": 4
+    },
+    {
+      "id": 2,
+      "dir": 1,
+      "startX": 2,
+      "startY": 0,
+      "endX": 2,
+      "endY": 30
+    }],
+  "sensors": [{
+      "id": 1,
+      "x": 1,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "x": 0,
+      "y": 0
+    }],
+  "connections": [{
+    "sensor_A": 1,
+    "sensor_B": 2
+    }]
+}
