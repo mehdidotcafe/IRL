@@ -1,0 +1,17 @@
+// sensor list
+{
+  "id": 1,
+  "sensors": [{
+    "sensor": Sensor,
+    // waiting time in sec
+    "delta": 0
+  }]
+}
+
+{
+  "id": 1,
+  "sensor_list_id": SensorList,
+  "car_count": 32,
+  "piedistrain_count": 9,
+  "state": State.GREEN
+}

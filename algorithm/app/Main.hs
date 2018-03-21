@@ -5,6 +5,8 @@ import Network.Socket.ByteString (recv)
 import ServerNetwork
 import Map
 import System.Environment
+import Control.Exception
+import Data.Typeable
 
 startCalculus :: IO ()
 startCalculus = forever $ do
@@ -12,7 +14,10 @@ startCalculus = forever $ do
 
 main = do
   args <- getArgs
-  Map.getAsGraph $ head args
+  case (args) of
+    [] -> error "please, provide a map as argument"
+    [path] -> Map.getSensorsAsBtree path >>= print
+
   -- forkIO ServerNetwork.start
   -- startCalculus
   putStrLn "YOLO"

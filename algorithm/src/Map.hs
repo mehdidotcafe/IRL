@@ -5,12 +5,13 @@ module Map where
   import qualified Data.ByteString.Lazy as B
   import qualified Data.ByteString.Char8 as C
   import GHC.Generics
+  import RBTree
 
   data Sensor  =
     Sensor { id         :: Int
            , x          :: Double
            , y          :: Double
-             } deriving (Show, Generic)
+             } deriving (Eq, Ord, Show, Generic)
 
   instance FromJSON Sensor
   instance ToJSON Sensor
@@ -37,7 +38,7 @@ module Map where
 
   data MapJSON  =
     MapJSON {
-            streets          :: [Street]
+            streets         :: [Street]
            ,sensors         :: [Sensor]
            ,connections     :: [Connection]
              } deriving (Show, Generic)
@@ -49,14 +50,21 @@ module Map where
   getJSON :: String -> IO B.ByteString
   getJSON path = B.readFile path
 
-  getAsGraph :: String -> IO ()
-  getAsGraph path = do
-    str <- getJSON path
-    d <- eitherDecode <$> getJSON path  :: IO (Either String MapJSON)
-    -- If d is Left, the JSON was malformed.
-    -- In that case, we report the error.
-    -- Otherwise, we perform the operation of
-    -- our choice. In this case, just print it.
-    case d of
-     Left err -> putStrLn err
-     Right ps -> print ps
+  getSensorsAsList :: String -> IO [Sensor]
+  getSensorsAsList path = do
+    d <- eitherDecode <$> getJSON path :: IO (Either String MapJSON)
+
+    return (case d of
+     Left err -> error "the provided file is not valid"
+     Right ps -> sensors ps)
+
+  listToBtreeFromTree :: [Sensor] -> RBTree Sensor -> IO (RBTree Sensor)
+  listToBtreeFromTree list tree = case list of
+    [] -> return tree
+    otherwise -> listToBtreeFromTree (tail list) (RBTree.insert tree (head list))
+
+  listToBtree :: [Sensor] -> IO (RBTree Sensor)
+  listToBtree list = listToBtreeFromTree list Empty
+
+  getSensorsAsBtree :: String -> IO (RBTree Sensor)
+  getSensorsAsBtree path = getSensorsAsList path >>= listToBtree
