@@ -16,8 +16,9 @@ main = do
   args <- getArgs
   case (args) of
     [] -> error "please, provide a map as argument"
-    [path] -> Map.getSensorsAsBtree path >>= print
+    [path] -> do
+      sensors <- Map.getSensorsAsBtree path
 
+      print sensors
   -- forkIO ServerNetwork.start
   -- startCalculus
-  putStrLn "YOLO"

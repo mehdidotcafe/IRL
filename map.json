@@ -30,8 +30,5 @@
       "x": 0,
       "y": 0
     }],
-  "connections": [{
-    "sensor_A": 1,
-    "sensor_B": 2
-    }]
+  "connections": [[1, 2]]
 }
