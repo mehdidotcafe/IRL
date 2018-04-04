@@ -2,23 +2,24 @@ module ServerNetwork where
 
   import Network.Socket hiding (recv)
   import Network.Socket.ByteString (recv)
-  import qualified Data.ByteString.Char8 as C
   import Control.Monad (forever)
 
-  readSock (sock, _) = forever $
+  readSock (sock, _) callback = forever $
       do
+        print "new client"
         msg <- recv sock 1024
-        C.putStrLn msg
+        callback msg
 
-  loop sock = forever $
+  loop sock callback = forever $
       do
        conn <- accept sock
-       readSock conn
+       readSock conn callback
        close sock
 
-  start = do
+  start callback = do
     sock <- socket AF_INET Stream 0
     setSocketOption sock ReuseAddr 1
     bind sock (SockAddrInet 4242 iNADDR_ANY)
+    print "creating server at port 4242"
     listen sock 2
-    loop sock
+    loop sock callback

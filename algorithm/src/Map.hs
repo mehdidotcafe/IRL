@@ -39,16 +39,22 @@ module Map where
   instance FromJSON MapJSON
   instance ToJSON MapJSON
 
+  data SensorState = Red | Orange | Green deriving (Enum, Eq, Ord, Show, Generic)
+
   data Sensor =
     Sensor {
             id         :: Int
            , x          :: Double
            , y          :: Double
            , conn_id         :: Int
+           , cars            :: Int
+           , pieds           :: Int
+           , delta           :: Double
+           , state           :: SensorState
           } deriving (Eq, Ord, Show, Generic)
 
   unwrapSensors :: SensorJSON -> Sensor
-  unwrapSensors (SensorJSON id x y) = Sensor id x y (-2)
+  unwrapSensors (SensorJSON id x y) = Sensor id x y (-2) 0 0 0 Red
 
   linkSensors :: RBTree Sensor -> [[Int]] -> RBTree Sensor
   linkSensors sensors conns = let
@@ -61,7 +67,7 @@ module Map where
            True -> idx
 
       updateSensor :: Sensor -> Sensor
-      updateSensor (Sensor id x y conn_id) = Sensor id x y (getListFromSensorId id conns 0)
+      updateSensor (Sensor id x y conn_id 0 0 0 Red) = Sensor id x y (getListFromSensorId id conns 0) 0 0 0 Red
     in
 
     RBTree.map sensors updateSensor

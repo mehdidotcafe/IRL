@@ -3,9 +3,9 @@
       "id": 1,
       "dir": 1,
       "startX": 0,
-      "startY": 0,
-      "endX": 18,
-      "endY": 4
+      "endX": 8,
+      "startY": 2,
+      "endY": 2
     },
     {
       "id": 2,
@@ -13,7 +13,31 @@
       "startX": 2,
       "startY": 0,
       "endX": 2,
-      "endY": 30
+      "endY": 5
+    },
+    {
+      "id": 3,
+      "dir": 1,
+      "startX": 8,
+      "endX": 8,
+      "startY": 1,
+      "endY": 13
+    },
+    {
+      "id": 4,
+      "dir": 1,
+      "startX": 8,
+      "endX": 8,
+      "startY": 1,
+      "endY": 13
+    },
+    {
+      "id": 5,
+      "dir": 1,
+      "startX": 2,
+      "endX": 10,
+      "startY": 4,
+      "endY": 4
     }],
   "sensors": [{
       "id": 1,
