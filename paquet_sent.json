@@ -1,0 +1,5 @@
+{
+  "event": ["new_car", "move_car", "del_car", "new_piedestrian", "move_piedestrian", "del_piedestrian"],
+  "sensor_id": 1,
+  "entity_id": 42
+}
