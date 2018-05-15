@@ -53,6 +53,8 @@ module Map where
            , state           :: SensorState
           } deriving (Eq, Ord, Show, Generic)
 
+  type RBTreeList = (RBTree Sensor, [[Int]])
+
   unwrapSensors :: SensorJSON -> Sensor
   unwrapSensors (SensorJSON id x y) = Sensor id x y (-2) 0 0 0 Red
 

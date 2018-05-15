@@ -2,7 +2,6 @@ module Tree where
 
   data Tree a = Empty | Node a (Tree a) (Tree a) deriving (Show)
 
-
   insert :: (Ord a) => Tree a -> a -> Tree a
   insert Empty value = Node value Empty Empty
   insert (Node v t1 t2) value

@@ -18,6 +18,16 @@ module RBTree where
   balance BlackN x a (RBNode RedN y b (RBNode RedN z c d)) = RBNode RedN y (RBNode BlackN x a b) (RBNode BlackN z c d)
   balance color x a b = RBNode color x a b
 
+  map :: RBTree a -> (a -> a) -> RBTree a
   map tree fx = case tree of
     Empty -> Empty
     (RBNode color x left right) -> RBNode color (fx x) (RBTree.map left fx) (RBTree.map right fx)
+
+  printTree :: (Show a) => RBTree a -> IO ()
+  printTree tree =
+    case tree of
+      (RBNode color value left right) -> do
+        print value
+        printTree left
+        printTree right
+      Empty -> return ()

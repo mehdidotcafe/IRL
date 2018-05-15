@@ -4,22 +4,19 @@ module ServerNetwork where
   import Network.Socket.ByteString (recv)
   import Control.Monad (forever)
 
-  readSock (sock, _) callback = forever $
-      do
-        print "new client"
-        msg <- recv sock 1024
-        callback msg
+  readSock d sock callback = recv sock 1024 >>= (\msg -> callback d msg) >>= (\newD -> readSock newD sock callback)
 
-  loop sock callback = forever $
+  loop d sock callback = forever $
       do
        conn <- accept sock
-       readSock conn callback
+       print "new client"
+       readSock d (fst conn) callback
        close sock
 
-  start callback = do
+  start d callback = do
     sock <- socket AF_INET Stream 0
     setSocketOption sock ReuseAddr 1
     bind sock (SockAddrInet 4242 iNADDR_ANY)
     print "creating server at port 4242"
     listen sock 2
-    loop sock callback
+    loop d sock callback
