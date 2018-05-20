@@ -1,22 +1,27 @@
 module ServerNetwork where
-
-  import Network.Socket hiding (recv)
-  import Network.Socket.ByteString (recv)
+  import Control.Concurrent
+  import Network.Socket hiding (send, sendTo, recv, recvFrom)
+  import Network.Socket.ByteString
+  import Data.ByteString.Char8
   import Control.Monad (forever)
 
-  readSock d sock callback = recv sock 1024 >>= (\msg -> callback d msg) >>= (\newD -> readSock newD sock callback)
+  -- readSock d sock callback = recv sock 1024 >>= (\msg -> callback d msg) >>= (\newD -> readSock newD sock callback)
+  readSock d sock callback = forever $ do
+    recv sock 1024 >>= (\msg -> callback d msg)
 
-  loop d sock callback = forever $
+  loop d sock forkCallback callback = forever $
       do
-       conn <- accept sock
-       print "new client"
-       readSock d (fst conn) callback
+       (sock, _) <- accept sock
+       send sock $ pack "=== CONNECTION ACCEPTED ===\n"
+       forkIO (do
+         forkCallback d sock)
+       readSock d sock callback
        close sock
 
-  start d callback = do
+  start d forkCallback callback = do
     sock <- socket AF_INET Stream 0
     setSocketOption sock ReuseAddr 1
     bind sock (SockAddrInet 4242 iNADDR_ANY)
-    print "creating server at port 4242"
+    print "=== CREATING SERVER AT PORT 4242 ==="
     listen sock 2
-    loop d sock callback
+    loop d sock forkCallback callback
