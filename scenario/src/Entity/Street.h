@@ -5,7 +5,7 @@
 #ifndef SCENARIO_STREET_H
 #define SCENARIO_STREET_H
 
-class street
+class Street
 {
 public:
     int id;
@@ -14,6 +14,7 @@ public:
     int endX;
     int StartY;
     int endY;
+
 private:
 };
 
