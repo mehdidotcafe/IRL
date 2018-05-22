@@ -68,9 +68,6 @@ module Calculation where
         treeMap <- takeMVar wrappedTreeMap
         let ret = refreshDataFromPaquet treeMap paquet
         putMVar wrappedTreeMap ret
-        -- print "=== NEW TREE ==="
-        -- RBTree.printTree $ fst ret
-        -- print $ snd ret
 
   getConnectedSensors :: RBTree Sensor -> [Int] -> [Sensor]
   getConnectedSensors sensors ids = case ids of
@@ -92,43 +89,51 @@ module Calculation where
         then currSensor
         else otherSensor
 
-  sendChange sensor sock = unsafePerformIO $ do
-    Network.Socket.ByteString.send sock $ pack $ Sensor.toJSON sensor
+  sendChange sensor buffer = unsafePerformIO $ do
+    sensorList <- takeMVar buffer
+    putMVar buffer $ sensor : sensorList
+    -- Network.Socket.ByteString.send sock $ pack $ Sensor.toJSON sensor
     return sensor
 
   -- sendChange sensor sock = trace "SENSOR CHANGED" sensor
 
-  updateSensorUnconnected :: Sensor -> Socket -> Sensor
-  updateSensorUnconnected sensor sock = if (computeSum sensor) > 0
+  updateSensorUnconnected :: Sensor -> MVar [Sensor] -> Sensor
+  updateSensorUnconnected sensor buffer = if (computeSum sensor) > 0
     then if (state sensor) == Red
-      then sendChange (setToGreen sensor) sock
+      then sendChange (setToGreen sensor) buffer
       else incrDelta sensor $ getDelay
     else if (state sensor) == Green
-      then sendChange (setToRed sensor) sock
+      then sendChange (setToRed sensor) buffer
       else incrDelta sensor $ getDelay
 
   getDelay :: Int
   getDelay = 100 * 1000
 
-  updateSensorState :: RBTree Sensor -> ConnList -> Socket -> Sensor -> Sensor
-  updateSensorState sensors conns sock sensor = case (conn_id sensor) of
-    -1 -> updateSensorUnconnected sensor sock
+  updateSensorState :: RBTree Sensor -> ConnList -> Socket -> MVar [Sensor] -> Sensor -> Sensor
+  updateSensorState sensors conns sock buffer sensor = case (conn_id sensor) of
+    -1 -> updateSensorUnconnected sensor buffer
     _ -> do
       let connectedSensors = getConnectedSensors sensors (conns !! (conn_id sensor))
       case connectedSensors of
-        [] -> updateSensorUnconnected sensor sock
+        [] -> updateSensorUnconnected sensor buffer
         _ -> if (Sensor.id $ getNextGreenSensor connectedSensors) == Sensor.id sensor
           then if (state sensor) == Red
-              then sendChange (setToGreen sensor) sock
+              then sendChange (setToGreen sensor) buffer
               else incrDelta sensor $ getDelay
           else if (state sensor) == Green
-              then sendChange (setToRed sensor) sock
+              then sendChange (setToRed sensor) buffer
               else  incrDelta sensor $ getDelay
+
+
+  sendData sock sensors = if (length sensors) > 0 then Network.Socket.ByteString.send sock $ pack $ Sensor.toJSONList sensors else return (0)
 
   calculate :: MVar RBTreeList -> Socket -> IO ()
   calculate wrappedTreeMap sock = forever $ do
     (tree, conns) <- takeMVar wrappedTreeMap
-    let newTree = RBTree.map tree (updateSensorState tree conns sock)
+    buffer <- newMVar []
+    let newTree = RBTree.map tree (updateSensorState tree conns sock buffer)
     RBTree.printTree newTree
     putMVar wrappedTreeMap (newTree, conns)
+    toSend <- readMVar buffer
+    sendData sock toSend
     threadDelay $ getDelay

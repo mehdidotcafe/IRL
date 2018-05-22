@@ -19,5 +19,16 @@ module Sensor where
     Orange -> "ORANGE"
     Green -> "GREEN"
 
+  toJSONList :: [Sensor] -> String
+  -- toJSONList sensors = show $ map (\tmp -> Sensor.toJSON tmp) sensors
+  toJSONList sensors = "[" ++ (append sensors True) ++ "]\n" where
+      listElem sensor isFirst = case isFirst of
+        True -> Sensor.toJSON sensor
+        False -> ", " ++ (Sensor.toJSON sensor)
+
+      append sensors isFirst = case sensors of
+        [] -> ""
+        (x:xs) -> (listElem x isFirst) ++ (append xs False)
+
   toJSON :: Sensor -> String
-  toJSON sensor = "{\"state\":\"" ++ (getStateString sensor) ++ "\", \"id\":" ++ (show $ Sensor.id sensor) ++ "}\n"
+  toJSON sensor = "{\"state\":\"" ++ (getStateString sensor) ++ "\", \"id\":" ++ (show $ Sensor.id sensor) ++ "}"
