@@ -15,8 +15,5 @@ main = do
   case (args) of
     [] -> error "please, provide a map as argument"
     [path] -> do
-      treeMap <- Map.getSensorsAsBtree path
-      RBTree.printTree (fst treeMap)
-      forkIO (do
-        Calculation.calculate treeMap)
-      ServerNetwork.start treeMap Calculation.parseMessage
+      mvar <- Map.getSensorsAsBtree path >>= newMVar
+      ServerNetwork.start mvar Calculation.calculate Calculation.newEvent
