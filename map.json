@@ -11,8 +11,8 @@
       "id": 2,
       "dir": 1,
       "startX": 2,
-      "startY": 0,
       "endX": 2,
+      "startY": 0,
       "endY": 5
     },
     {
@@ -41,16 +41,19 @@
     }],
   "sensors": [{
       "id": 1,
+      "street_id":1,
       "x": 1,
       "y": 0
     },
     {
       "id": 2,
+      "street_id":1,
       "x": 0,
       "y": 0
     },
     {
       "id": 4,
+      "street_id":1,
       "x": 0,
       "y": 0
     }],
