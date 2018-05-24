@@ -3,12 +3,15 @@
 //
 
 #include "Sensor.h"
+#include "../Enum/SensorsState.h"
 
-Sensor::Sensor(int id, int pos_x, int pos_y)
+Sensor::Sensor(int id, int streetID, int pos_x, int pos_y)
 {
     this->id = id;
+    this->streetId = streetID;
     this->pos_x = pos_x;
-    this->pos_xy= pos_y;
+    this->pos_y = pos_y;
+    this->state = SensorsState::RED;
 }
 
 int Sensor::getId()
@@ -26,7 +29,7 @@ int Sensor::getPosY()
     return(this->pos_y);
 }
 
-SensorsState getState()
+SensorsState Sensor::getState()
 {
     return (this->state);
 }

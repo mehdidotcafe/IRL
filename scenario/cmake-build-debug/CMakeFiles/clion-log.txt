@@ -1,18 +1,4 @@
 /home/reyre/ide/clion-2018.1.2/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/reyre/project/IRL/scenario
--- The C compiler identification is GNU 7.3.0
--- The CXX compiler identification is GNU 7.3.0
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc -- works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Detecting C compile features
--- Detecting C compile features - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Detecting CXX compile features
--- Detecting CXX compile features - done
 -- Configuring done
 CMake Error at CMakeLists.txt:8 (add_executable):
   Cannot find source file:
@@ -27,4 +13,3 @@ CMake Error: CMake can not determine linker language for target: scenario
 CMake Error: Cannot determine link language for target "scenario".
 -- Generating done
 -- Build files have been written to: /home/reyre/project/IRL/scenario/cmake-build-debug
-Unable to determine product file path for target scenario. Running and debugging will be unavailable.

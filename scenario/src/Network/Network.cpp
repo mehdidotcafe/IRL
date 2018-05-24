@@ -8,14 +8,13 @@
 
 #include "Network.h"
 
-Network::Network(std::string h, int p)
+Network::Network(std::string h, int p, boost::asio::ip::tcp::socket &socket) : socket(socket)
 {
     this->host = h;
     this->port = p;
-    boost::asio::io_service ios;
+
     boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(this->host), this->port);
 
-    this->socket = boost::asio::ip::tcp::socket(ios);
     this->socket.connect(endpoint);
 }
 
@@ -28,12 +27,12 @@ void Network::send_s(std::string message)
     socket.write_some(boost::asio::buffer(buf, message.size()), error);
 }
 
-void Network::read_s()
+std::string Network::read_s()
 {
     boost::array<char, 4096> buf;
     boost::system::error_code error;
 
-    size_t len = socket.read_some(boost::asio::buffer(buf), error);
+    size_t len = this->socket.read_some(boost::asio::buffer(buf), error);
 
     if (error == boost::asio::error::eof)
     {
@@ -42,8 +41,9 @@ void Network::read_s()
     }
     else if (error)
         throw boost::system::system_error(error);
-
-    std::cout.write(buf.data(), len);
+    std::string res;
+    std::copy(buf.begin(), buf.end(), std::back_inserter(res));
+    return (res);
 }
 
 Network::~Network()

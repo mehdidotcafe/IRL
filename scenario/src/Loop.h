@@ -11,7 +11,7 @@ class Loop
 {
 public:
     Loop();
-    void run(Network & net);
+    void run(Network & net, int, std::string, int);
 
 private:
 };

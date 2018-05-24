@@ -1,7 +1,7 @@
 {
   streets: [{
     id: Number,
-    // -1 for left or up 1 for right or down
+    // -1 for left or down 1 for right or up
     dir: -1 || 1,
     startX: Number,
     startY: Number,

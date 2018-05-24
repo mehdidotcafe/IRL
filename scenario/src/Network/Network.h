@@ -12,16 +12,16 @@
 class Network
 {
 public:
-    Network(std::string host, int port);
+    Network(std::string h, int p, boost::asio::ip::tcp::socket &socket);
     ~Network();
 
     void send_s(std::string message);
-    void read_s();
+    std::string read_s();
 
 private:
     std::string host;
     int port;
-    boost::asio::ip::tcp::socket socket;
+    boost::asio::ip::tcp::socket &socket;
 };
 
 #endif //IRL_NETWORK_H

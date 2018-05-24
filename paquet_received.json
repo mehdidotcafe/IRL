@@ -1,4 +1,10 @@
 {
-  "state": ["RED", "ORANGE", "GREEN"],
-  "id": 1
+  "sensors": [{
+      "state": ["RED"],
+      "id": 1
+    },
+    {
+      "state": ["GREEN"],
+      "id": 1
+    }]
 }

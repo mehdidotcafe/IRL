@@ -7,38 +7,138 @@
 #include <sstream>
 #include <string>
 
+#include "jsonParser.h"
+#include "../Entity/Street.h"
+#include "../Entity/Sensor.h"
+
+namespace pt = boost::property_tree;
+
 jsonParser::jsonParser()
 {
 }
 
-void jsonParser::get(std::string json)
+std::vector<Street> jsonParser::getMap(int nbr_street, std::string map)
 {
-    try
-    {
-        std::stringstream ss;
-        boost::property_tree::ptree pt;
-        boost::property_tree::read_json(ss, pt);
+    pt::ptree root;
+    pt::read_json(map, root);
+    std::vector<Street> lstreets;
 
-        BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("particles.electron"))
-        {
-            assert(v.first.empty());
-            std::cout << v.second.data() << std::endl;
-        }
-        return EXIT_SUCCESS;
-    }
-    catch (std::exception const& e)
+    int matrix[nbr_street][6];
+    int x = 0;
+
+    for (pt::ptree::value_type &row : root.get_child("streets"))
     {
-        std::cerr << e.what() << std::endl;
+        int y = 0;
+        for (pt::ptree::value_type &cell : row.second)
+        {
+            matrix[x][y] = cell.second.get_value<int>();
+            y++;
+        }
+        Street street_tmp(matrix[x][0], matrix[x][1],matrix[x][2], matrix[x][3],matrix[x][4],matrix[x][5]);
+        lstreets.push_back(street_tmp);
+        x++;
     }
-    return EXIT_FAILURE;
+    return (lstreets);
 }
 
-void jsonParser::print(boost::property_tree::ptree const& pt)
+std::vector<Sensor> jsonParser::getSensors(std::string map)
 {
-    using boost::property_tree::ptree;
-    ptree::const_iterator end = pt.end();
-    for (ptree::const_iterator it = pt.begin(); it != end; ++it) {
-        std::cout << it->first << ": " << it->second.get_value<std::string>() << std::endl;
-        print(it->second);
+    pt::ptree root;
+    pt::read_json(map, root);
+    std::vector<Sensor> lsensors;
+
+    int matrix[6][6];
+    int x = 0;
+
+    for (pt::ptree::value_type &row : root.get_child("sensors"))
+    {
+        int y = 0;
+        for (pt::ptree::value_type &cell : row.second)
+        {
+            matrix[x][y] = cell.second.get_value<int>();
+            y++;
+        }
+        Sensor sensor_tmp(matrix[x][0], matrix[x][1],matrix[x][2], matrix[x][3]);
+        lsensors.push_back(sensor_tmp);
+        x++;
+    }
+    return (lsensors);
+}
+
+std::string jsonParser::CreateP(Piedestrian *p, std::string status)
+{
+    std::string res;
+
+    pt::ptree root;
+    root.put("event", status);
+    root.put("sensor_id", p->hsensor.id);
+    root.put("entity_id", p->id);
+    root.put("x", p->pos_x);
+    root.put("y", p->pos_y);
+    std::stringstream ss;
+    boost::property_tree::json_parser::write_json(ss, root);
+    return (ss.str());
+}
+
+std::string jsonParser::CreateC(Car *c, std::string status)
+{
+    std::string res;
+
+    pt::ptree root;
+    root.put("event", status);
+    root.put("sensor_id", "test");
+    root.put("entity_id", c->id);
+    root.put("x", c->pos_x);
+    root.put("y", c->pos_y);
+    pt::write_json(std::cout, root);
+    return (res);
+}
+
+void JsonParser::changeSensorState(std::string json_r, std::vector<Sensor> &ls)
+{
+    pt::ptree root;
+    pt::read_json(map, root);
+
+    int matrix[6][6];
+    int x = 0;
+
+    for (pt::ptree::value_type &row : root.get_child("sensors"))
+    {
+        int y = 0;
+        for (pt::ptree::value_type &cell : row.second)
+        {
+            matrix[x][y] = cell.second.get_value<int>();
+            y++;
+        }
+        for(int i = 0; i < ls.size(); i++)
+        {
+            if (matrix[x][1] == ls[i].id)
+            {
+                if (matrix[x][0] == "RED")
+                    ls[i].state = SensorsState::RED;
+                else if (matrix[x][0] == "GREEN")
+                    ls[i].state = SensorsState::GREEN;
+                else
+                    ls[i].state = SensorsState::ORANGE;
+            }
+
+        }
+        x++;
+    }
+}
+
+void jsonParser::displayMap(std::vector<Street> lstreets)
+{
+    for(int i = 0; i < lstreets.size(); i++)
+    {
+        std::cout << lstreets[i].id << "," << lstreets[i].dir << "," << lstreets[i].startX << "," << lstreets[i].endX << "," << lstreets[i].startY << "," << lstreets[i].endY << std::endl;
+    }
+}
+
+void jsonParser::displaySensor(std::vector<Sensor> lsensors)
+{
+    for(int i = 0; i < lsensors.size(); i++)
+    {
+        std::cout << lsensors[i].id << "," << lsensors[i].pos_x << "," << lsensors[i].pos_y << std::endl;
     }
 }

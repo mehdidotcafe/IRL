@@ -13,9 +13,15 @@ CPPFLAGS	+= -std=c++11
 NAME	    = scenario
 
 SRC	= main.cpp \
-      $(SRC_PATH)Gen.cpp \
+      $(SRC_PATH)/Entity/Car.cpp \
+      $(SRC_PATH)/Entity/Gen.cpp \
+      $(SRC_PATH)/Entity/Map.cpp \
+      $(SRC_PATH)/Entity/Piedestrian.cpp \
+      $(SRC_PATH)/Entity/Sensor.cpp \
+      $(SRC_PATH)/Entity/Street.cpp \
+      $(SRC_PATH)/Json/jsonParser.cpp \
+      $(SRC_PATH)/Network/Network.cpp \
       $(SRC_PATH)Loop.cpp \
-      $(SRC_PATH)Network.cpp \
 
 OBJ	= $(SRC:.cpp=.o)
 
